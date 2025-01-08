@@ -17,7 +17,7 @@ def start_game():
     BLACK = (0, 0, 0)
     RED = (255, 0, 0)
     BLUE = (0, 0, 255)
-    GREEN = (0, 255, 0)
+    GREEN = (255, 0, 230)
 
     # Font for score and levels
     font = pygame.font.Font(None, 50)
@@ -29,7 +29,7 @@ def start_game():
     # Paddle properties
     PADDLE_WIDTH = 100
     PADDLE_HEIGHT = 10
-    PADDLE_SPEED = 5
+    PADDLE_SPEED = 8
 
     # Ball properties
     BALL_RADIUS = 8
@@ -62,6 +62,7 @@ def start_game():
     # Function to reset game variables for a new level
     def reset_game(level):
         global paddle_x, paddle_y, ball_x, ball_y, ball_dx, ball_dy, brick_list, score
+        score = 0
         paddle_x = (SCREEN_WIDTH - PADDLE_WIDTH) // 2
         paddle_y = SCREEN_HEIGHT - 50
         ball_x = SCREEN_WIDTH // 2
@@ -81,8 +82,7 @@ def start_game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                sys.exit()
-
+                return score
         # Handle menu state
         if game_state == "menu":
             # Draw menu
@@ -101,7 +101,7 @@ def start_game():
                 game_state = "game"
             if keys[pygame.K_q]:  # Q key to quit
                 pygame.quit()
-                sys.exit()
+                return score
 
         # Handle game state
         elif game_state == "game":
@@ -115,6 +115,7 @@ def start_game():
                 game_state = "menu"
                 current_level = 1
                 reset_game(current_level)
+                score = 0
 
             # Update ball position
             ball_x += ball_dx
@@ -149,13 +150,13 @@ def start_game():
                 else:
                     print("You Won!")
                     pygame.quit()
-                    sys.exit()
-
+                    return score
+                
             # Ball falls below the paddle
             if ball_y > SCREEN_HEIGHT:
                 game_state = "menu"
                 current_level = 1
-                reset_game(current_level)
+                return(score)
 
             # Clear screen
             screen.fill(BLACK)
