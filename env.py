@@ -47,6 +47,25 @@ class BrickBreakerEnv(gym.Env):
                 brick_y = row * (brick_height + spacing)
                 brick = pygame.Rect(brick_x, brick_y, brick_width, brick_height)
                 self.bricks.append(brick)
+    
+    def reset(self):
+        self.paddle_x = (self.SCREEN_WIDTH - 100) // 2
+        self.ball_x = self.SCREEN_WIDTH // 2
+        self.ball_y = self.SCREEN_HEIGHT // 2
+        self.ball_dx = 4
+        self.ball_dy = -4
+        self.score = 0
+        self.create_bricks()
+
+        # Return the initial state
+        return np.array([
+            self.paddle_x,
+            self.ball_x,
+            self.ball_y,
+            self.ball_dx,
+            self.ball_dy,
+            len(self.bricks)
+        ], dtype=np.float32)
 
     def step(self, action):
         # Update paddle position based on action
