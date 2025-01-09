@@ -16,8 +16,8 @@ class BrickBreakerEnv(gym.Env):
 
         # Observations: paddle x, ball x, ball y, ball dx, ball dy
         self.observation_space = spaces.Box(
-            low=np.array([0, 0, 0, -10, -10]),
-            high=np.array([self.SCREEN_WIDTH, self.SCREEN_WIDTH, self.SCREEN_HEIGHT, 10, 10]),
+            low=np.array([0, 0, 0, -10, -10, 0]),
+            high=np.array([self.SCREEN_WIDTH, self.SCREEN_WIDTH, self.SCREEN_HEIGHT, 10, 10, 100]),
             dtype=np.float32
         )
 
@@ -26,6 +26,7 @@ class BrickBreakerEnv(gym.Env):
         self.ball_y = 0
         self.ball_dx = 0
         self.ball_dy = 0
+        self.bricks_remaining = 0
 
     def step(self, action):
         # Update the game state based on the action
@@ -41,7 +42,7 @@ class BrickBreakerEnv(gym.Env):
         return state, reward, done, {}
 
     def get_state(self):
-        return np.array([self.paddle_x, self.ball_x, self.ball_y, self.ball_dx, self.ball_dy], dtype=np.float32)  
+        return np.array([self.paddle_x, self.ball_x, self.ball_y, self.ball_dx, self.ball_dy, self.bricks_remaining], dtype=np.float32)  
 
 
 
@@ -75,5 +76,8 @@ class BrickBreakerEnv(gym.Env):
         return False  # Placeholder logic
 
     def level_completed(self):
-        return False # Placeholder logic
+        if self.bricks_remaining == 0:
+            return True
+    
+        return False
         
