@@ -1,12 +1,13 @@
 import pyautogui
 import numpy as np
-from env import BrickBreakerEnv
 import pygame
+import game
+from env import BrickBreakerEnv
 
 class Agent:
     def __init__(self, env):
         self.env = env
-        self.clock = pygame.time.Clock()
+        self.clock = pygame.time.Clock()  # Clock to cap the tick rate
 
     def rule_based_policy(self, state):
         """
@@ -22,7 +23,7 @@ class Agent:
         elif ball_x > paddle_x + 100:
             return 2  # Move right
         else:
-            return 0  # Stay
+            return 0  # Stay  
 
     def play_game(self):
         state = self.env.reset()
@@ -30,16 +31,21 @@ class Agent:
         total_reward = 0
 
         while not done:
+            # Process agent's action
             action = self.rule_based_policy(state)
             state, reward, done, _ = self.env.step(action)
             total_reward += reward
 
+            # Render the updated game state
+            game.render_game_state(self.env.bricks, self.env.paddle_x, self.env.ball_x, self.env.ball_y, self.env.score)
+
+            # Cap the frame rate to 60 FPS
+            self.clock.tick(120)
+
             # Print state and action for debugging
-            print(f"State: {state}, Action: {action}, Reward: {reward}")
+            # print(f"State: {state}, Action: {action}, Reward: {reward}")
 
-            self.clock.tick(60)
-
-        print(f"Total Reward: {total_reward}")
+        # print(f"Total Reward: {total_reward}")
 
 # Initialize the environment
 env = BrickBreakerEnv()

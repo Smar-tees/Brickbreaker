@@ -47,8 +47,9 @@ class BrickBreakerEnv(gym.Env):
                 brick_y = row * (brick_height + spacing)
                 brick = pygame.Rect(brick_x, brick_y, brick_width, brick_height)
                 self.bricks.append(brick)
-    
+
     def reset(self):
+        self.bricks = []
         self.paddle_x = (self.SCREEN_WIDTH - 100) // 2
         self.ball_x = self.SCREEN_WIDTH // 2
         self.ball_y = self.SCREEN_HEIGHT // 2
@@ -74,26 +75,39 @@ class BrickBreakerEnv(gym.Env):
         elif action == 2 and self.paddle_x < self.SCREEN_WIDTH - 100:  # Move right
             self.paddle_x += 8
 
-        # Update ball position
-        self.ball_x += self.ball_dx
-        self.ball_y += self.ball_dy
+        # Calculate the new ball position
+        next_ball_x = self.ball_x + self.ball_dx
+        next_ball_y = self.ball_y + self.ball_dy
 
-        # Ball collision with walls
-        if self.ball_x <= 0 or self.ball_x >= self.SCREEN_WIDTH:
+        # Check for collision with walls
+        if next_ball_x <= 0 or next_ball_x >= self.SCREEN_WIDTH:
             self.ball_dx = -self.ball_dx
-        if self.ball_y <= 0:
+        if next_ball_y <= 0:
             self.ball_dy = -self.ball_dy
 
-        # Ball collision with paddle
-        if self.ball_y >= self.SCREEN_HEIGHT - 50 and self.paddle_x <= self.ball_x <= self.paddle_x + 100:
+        # Check for collision with paddle
+        if next_ball_y >= self.SCREEN_HEIGHT - 50 and self.paddle_x <= next_ball_x <= self.paddle_x + 100:
             self.ball_dy = -self.ball_dy
 
-        # Ball collision with bricks
+        # Perform swept collision detection with bricks
+        ball_rect = pygame.Rect(next_ball_x - 8, next_ball_y - 8, 16, 16)
+        collided_brick = None
         for brick in self.bricks[:]:
-            if pygame.Rect(self.ball_x - 8, self.ball_y - 8, 16, 16).colliderect(brick):
-                self.bricks.remove(brick)
-                self.ball_dy = -self.ball_dy
-                self.score += 10
+            if ball_rect.colliderect(brick):
+                collided_brick = brick
+                break
+
+        # Handle brick collision
+        if collided_brick:
+            print(collided_brick)
+            print(len(self.bricks))
+            self.bricks.remove(collided_brick)
+            self.ball_dy = -self.ball_dy
+            self.score += 10
+
+        # Update the ball's position
+        self.ball_x = next_ball_x
+        self.ball_y = next_ball_y
 
         # Ball falls below paddle
         if self.ball_y > self.SCREEN_HEIGHT:
@@ -117,4 +131,3 @@ class BrickBreakerEnv(gym.Env):
         game.render_game_state(self.bricks, self.paddle_x, self.ball_x, self.ball_y, self.score)
 
         return state, reward, done, {}
-
