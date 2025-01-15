@@ -69,6 +69,7 @@ class BrickBreakerEnv(gym.Env):
         ], dtype=np.float32)
 
     def step(self, action):
+        reward = 0
         # Update paddle position based on action
         if action == 1 and self.paddle_x > 0:  # Move left
             self.paddle_x -= 8
@@ -88,6 +89,7 @@ class BrickBreakerEnv(gym.Env):
         # Check for collision with paddle
         if next_ball_y >= self.SCREEN_HEIGHT - 50 and self.paddle_x <= next_ball_x <= self.paddle_x + 100:
             self.ball_dy = -self.ball_dy
+            reward = 10
 
         # Perform swept collision detection with bricks
         ball_rect = pygame.Rect(next_ball_x - 8, next_ball_y - 8, 16, 16)
@@ -99,11 +101,10 @@ class BrickBreakerEnv(gym.Env):
 
         # Handle brick collision
         if collided_brick:
-            print(collided_brick)
-            print(len(self.bricks))
             self.bricks.remove(collided_brick)
             self.ball_dy = -self.ball_dy
             self.score += 10
+            reward = 20
 
         # Update the ball's position
         self.ball_x = next_ball_x
@@ -115,19 +116,21 @@ class BrickBreakerEnv(gym.Env):
             reward = -100
         else:
             done = False
-            reward = 0
 
         # Calculate observation
-        state = np.array([
+        state = (
             self.paddle_x,
             self.ball_x,
             self.ball_y,
             self.ball_dx,
             self.ball_dy,
-            len(self.bricks)
-        ], dtype=np.float32)
+            len(self.bricks))
 
         # Render the game state
         game.render_game_state(self.bricks, self.paddle_x, self.ball_x, self.ball_y, self.score)
+
+        if done:
+            self.reset()
+             
 
         return state, reward, done, {}
