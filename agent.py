@@ -1,10 +1,11 @@
 import pyautogui
 import numpy as np
 import pygame
-import game
+from game import create_surfaces
 from env import BrickBreakerEnv
 import random
 import matplotlib.pyplot as plt
+from visualizer import Visualizer
 
 
 class Agent:
@@ -32,8 +33,6 @@ class Agent:
         return table
     
     def choose_action(self, state):
-        """ Choose an action using the epsilon-greedy policy. """
-        state = tuple(state)  # Ensure the state is a tuple
 
         if random.uniform(0, 1) < self.epsilon:
             # Explore: choose a random action
@@ -69,19 +68,6 @@ class Agent:
             for key, values in val.items():
                 if values != 0:
                     print(key, values)
-            
-
-
-
-
-        # plt.clf()  # Clear the current figure
-        # plt.imshow(q_table, cmap="coolwarm", interpolation="nearest")
-        # plt.colorbar()
-        # plt.title("Q-Table Heatmap")
-        # plt.xlabel("Actions")
-        # plt.ylabel("States")
-        # plt.draw()
-        # plt.pause(0.1)
 
 
 
@@ -91,6 +77,9 @@ env = BrickBreakerEnv()
 # Create the agent and play the game
 agent = Agent(env)
 clock = pygame.time.Clock()
+
+visualizer = Visualizer()
+visualizer.start()
 
 for episode in range(1000):  # Number of episodes to train
     state = agent.get_state()
@@ -107,19 +96,17 @@ for episode in range(1000):  # Number of episodes to train
         # Update Q-value
         agent.update_q_value(state, action, reward, next_state)
 
+        visualizer.update(agent.q_table[state])
+
         # Update state
         state = next_state
         total_reward += reward
 
-        q_table = agent.get_q_table()
-
-        agent.display_q_table(q_table)
-
-        clock.tick(10)
+        clock.tick(60)
         
 
     # Decay epsilon
     agent.decay_epsilon()
 
-    print(f"Episode {episode + 1}: Total Reward: {total_reward}")
+    visualizer.stop()
 

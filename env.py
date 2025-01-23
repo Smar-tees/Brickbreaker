@@ -17,8 +17,8 @@ class BrickBreakerEnv(gym.Env):
 
         # Observations: paddle_x, ball_x, ball_y, ball_dx, ball_dy, bricks_remaining
         self.observation_space = spaces.Box(
-            low=np.array([0, 0, 0, -10, -10, 0]),
-            high=np.array([self.SCREEN_WIDTH, self.SCREEN_WIDTH, self.SCREEN_HEIGHT, 10, 10, 100]),
+            low=np.array([0, 0, 0, -10, -10, 0], dtype=np.float32),
+            high=np.array([self.SCREEN_WIDTH, self.SCREEN_WIDTH, self.SCREEN_HEIGHT, 10, 10, 100], dtype=np.float32),
             dtype=np.float32
         )
 

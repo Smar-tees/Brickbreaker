@@ -52,3 +52,32 @@ def render_game_state(bricks, paddle_x, ball_x, ball_y, score):
 
     # Update the display
     pygame.display.flip()
+
+def render_overlay(game_surface, graph_surface, info_surface, game_state):
+    """Render the overlay with different sections."""
+    screen = pygame.display.get_surface()
+    
+    # Fill the whole screen with a background color
+    screen.fill((0, 0, 0))  # Black background
+
+    # Draw the game view
+    screen.blit(game_surface, (0, 0))
+
+    # Draw the graph section
+    pygame.draw.rect(screen, (50, 50, 50), (800, 0, 400, 300))  # Graph background
+    screen.blit(graph_surface, (800, 0))
+
+    # Draw the info section
+    pygame.draw.rect(screen, (30, 30, 30), (800, 300, 400, 300))  # Info background
+    screen.blit(info_surface, (800, 300))
+
+    # Refresh display
+    pygame.display.flip()
+
+def create_surfaces():
+    """Create subsurfaces for different sections."""
+    game_surface = pygame.Surface((800, 600))  # Game view
+    graph_surface = pygame.Surface((400, 300))  # Graph view
+    info_surface = pygame.Surface((400, 300))  # Info view
+    return game_surface, graph_surface, info_surface
+    
