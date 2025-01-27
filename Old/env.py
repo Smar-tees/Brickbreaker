@@ -2,15 +2,15 @@ import pygame
 import gym
 import numpy as np
 from gym import spaces
-import game  # Import rendering functions
+import game as game  # Import rendering functions
 from time import sleep
 
 class BrickBreakerEnv(gym.Env):
     def __init__(self):
         super(BrickBreakerEnv, self).__init__()
 
-        self.SCREEN_WIDTH = 800
-        self.SCREEN_HEIGHT = 600
+        self.SCREEN_WIDTH = 600
+        self.SCREEN_HEIGHT = 750
 
         # Actions: 0 = stay, 1 = move left, 2 = move right
         self.action_space = spaces.Discrete(3)
