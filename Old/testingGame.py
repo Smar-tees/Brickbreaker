@@ -1,7 +1,7 @@
 import pygame
-import Old.game as game  # Import rendering functions
+import game as game  # Import rendering functions
 from time import sleep
-from Old.env import BrickBreakerEnv
+from env import BrickBreakerEnv
 
 # Initialize Pygame
 pygame.init()
