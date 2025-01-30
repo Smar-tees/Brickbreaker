@@ -3,6 +3,7 @@ import sys
 from game import render_game_state
 from env import BrickBreakerEnv
 from time import sleep
+import matplotlib.pyplot as plt
 
 def draw_tile(screen, x, y, width, height, color, text=None, text_color=(0, 0, 0)):
     pygame.draw.rect(screen, color, (x, y, width, height))
@@ -25,8 +26,18 @@ def draw_game(screen, x, y):
     attempt_x = SCREEN_WIDTH - 135
     render_game_state(screen, env.get_bricks(), paddle_x, paddle_y, ball_x, ball_y, score_x, score, attempt_num, attempt_x)
 
-def get_attempt_num():
-    return attempt_num
+def create_plot(att_vals):
+    x_vals = list(att_vals.keys())
+    y_vals = list(att_vals.values())
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(x_vals, y_vals, marker='o', linestyle='-', color='b', label="Data Points")
+    plt.xlabel("Attempt Num")
+    plt.ylabel("Score")
+    plt.legend()
+    plt.grid(True)
+
+    plt.savefig("New/plot.png", dpi=300, bbox_inches='tight')
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -36,6 +47,10 @@ SCREEN_HEIGHT = 750
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Brick Breaker")
 env = BrickBreakerEnv(screen)
+attempt_num = 1
+attempt_vals = {0: 0}
+max_val = [0, 0]
+create_plot(attempt_vals)
 
 # Colors
 WHITE = (255, 255, 255)
@@ -46,8 +61,6 @@ GREEN = (255, 0, 255)
 
 while True:
     screen.fill(BLACK)
-    attempt_num = 1
-    attempt_vals = {0, 0}
     
     # Define tiles
     tile_width = 2
@@ -67,21 +80,19 @@ while True:
 
     start_x = 0
     start_y = 375
-    plot_img = pygame.image.load("New/temp_plot.png")
+    plot_img = pygame.image.load("New/plot.png")
     img_width = 600
     img_height = 375
     resized_img = pygame.transform.scale(plot_img, (img_width, img_height))
 
-    draw_graph(screen, resized_img, start_x, start_y)
+    # draw_graph(screen, resized_img, start_x, start_y)
 
     start_x = 0
     start_y = 0
     tile_width = 600
     tile_height = 375
 
-    for key, val in 
-
-    draw_tile(screen, start_x, start_y, tile_width, tile_height, BLACK, 'Best score: 10 - Attempt Number: 1', WHITE)
+    draw_tile(screen, start_x, start_y, tile_width, tile_height, BLACK, f'Best score: {max_val[0]} - Attempt Number: {max_val[1]}', WHITE)
     
     # Capture user input for paddle movement
     keys = pygame.key.get_pressed()
@@ -94,7 +105,10 @@ while True:
     
     if env.ball_y > env.GAME_HEIGHT:
         attempt_vals[attempt_num] = score
+        if score > max_val[0]:
+            max_val = [score, attempt_num]
         attempt_num += 1
+        create_plot(attempt_vals)
         env.reset()
 
 
@@ -107,4 +121,4 @@ while True:
                 pygame.quit()
                 sys.exit()
     
-    clock.tick(60)
+    clock.tick(120)

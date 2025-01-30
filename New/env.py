@@ -27,7 +27,7 @@ class BrickBreakerEnv(gym.Env):
         self.ball_dx = 4
         self.ball_dy = -4
         self.screen = screen
-        self.attempt_num = 0
+        self.attempt_num = 1
 
 
         self.create_bricks()
