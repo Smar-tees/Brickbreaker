@@ -5,7 +5,7 @@ import gym
 import game
 
 class BrickBreakerEnv(gym.Env):
-    def __init__(self, screen):
+    def __init__(self):
         super(BrickBreakerEnv, self).__init__()
         
         self.GAME_WIDTH = 600
@@ -26,7 +26,7 @@ class BrickBreakerEnv(gym.Env):
         self.score = 0
         self.ball_dx = 4
         self.ball_dy = -4
-        self.screen = screen
+        # self.screen = screen
         self.attempt_num = 1
 
 
@@ -92,7 +92,7 @@ class BrickBreakerEnv(gym.Env):
         # Check for collision with paddle
         if next_ball_y >= self.GAME_HEIGHT - 50 and self.paddle_x <= next_ball_x <= self.paddle_x + 100:
             self.ball_dy = -self.ball_dy
-            reward = 10
+            reward += 5
 
         # Perform swept collision detection with bricks
         ball_rect = pygame.Rect(next_ball_x - 8, next_ball_y - 8, 16, 16)
@@ -107,11 +107,18 @@ class BrickBreakerEnv(gym.Env):
             self.bricks.remove(collided_brick)
             self.ball_dy = -self.ball_dy
             self.score += 10
-            reward = 20
+            reward += 20
 
         # Update the ball's position
         self.ball_x = next_ball_x
         self.ball_y = next_ball_y
+
+        if self.ball_y > self.GAME_HEIGHT:
+            done = True
+            reward = -100
+        
+        else:
+            done = False
 
         # Calculate observation
         state = (
@@ -123,7 +130,7 @@ class BrickBreakerEnv(gym.Env):
             len(self.bricks))
 
         # Render the game state
-        game.render_game_state(self.screen, self.bricks, self.paddle_x, self.GAME_HEIGHT - 50, self.ball_x, self.ball_y, self.GAME_WIDTH + 12, self.score, self.attempt_num, self.GAME_WIDTH*2 - 135)
+        # game.render_game_state(self.screen, self.bricks, self.paddle_x, self.GAME_HEIGHT - 50, self.ball_x, self.ball_y, self.GAME_WIDTH + 12, self.score, self.attempt_num, self.GAME_WIDTH*2 - 135)
              
 
-        return self.score
+        return state, reward, self.score, {}
