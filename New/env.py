@@ -5,7 +5,7 @@ import gym
 import game
 
 class BrickBreakerEnv(gym.Env):
-    def __init__(self):
+    def __init__(self, screen):
         super(BrickBreakerEnv, self).__init__()
         
         self.GAME_WIDTH = 600
@@ -26,8 +26,14 @@ class BrickBreakerEnv(gym.Env):
         self.score = 0
         self.ball_dx = 4
         self.ball_dy = -4
-        # self.screen = screen
+        self.screen = screen
         self.attempt_num = 1
+        self.start_time = pygame.time.get_ticks()
+
+        self.brick_reward = 25
+        self.paddle_reward = 15
+        self.loss_penalty = -50
+        self.time_reward = 1
 
 
         self.create_bricks()
@@ -51,6 +57,7 @@ class BrickBreakerEnv(gym.Env):
         return self.bricks
     
     def reset(self):
+        self.start_time = pygame.time.get_ticks()
         self.bricks = []
         self.paddle_x = (self.GAME_WIDTH - 100) // 2 + 600
         self.ball_x = self.GAME_WIDTH // 2 + 600
@@ -92,7 +99,7 @@ class BrickBreakerEnv(gym.Env):
         # Check for collision with paddle
         if next_ball_y >= self.GAME_HEIGHT - 50 and self.paddle_x <= next_ball_x <= self.paddle_x + 100:
             self.ball_dy = -self.ball_dy
-            reward += 5
+            reward += self.paddle_reward
 
         # Perform swept collision detection with bricks
         ball_rect = pygame.Rect(next_ball_x - 8, next_ball_y - 8, 16, 16)
@@ -107,15 +114,19 @@ class BrickBreakerEnv(gym.Env):
             self.bricks.remove(collided_brick)
             self.ball_dy = -self.ball_dy
             self.score += 10
-            reward += 20
+            reward += self.brick_reward
 
         # Update the ball's position
         self.ball_x = next_ball_x
         self.ball_y = next_ball_y
 
+        current_time = pygame.time.get_ticks()
+        time_alive = (current_time - self.start_time) / 1000.0  # Convert to seconds
+        reward += self.time_reward * (time_alive / 10)
+
         if self.ball_y > self.GAME_HEIGHT:
             done = True
-            reward = -100
+            reward = self.loss_penalty
         
         else:
             done = False
@@ -130,7 +141,7 @@ class BrickBreakerEnv(gym.Env):
             len(self.bricks))
 
         # Render the game state
-        # game.render_game_state(self.screen, self.bricks, self.paddle_x, self.GAME_HEIGHT - 50, self.ball_x, self.ball_y, self.GAME_WIDTH + 12, self.score, self.attempt_num, self.GAME_WIDTH*2 - 135)
+        game.render_game_state(self.screen, self.bricks, self.paddle_x, self.GAME_HEIGHT - 50, self.ball_x, self.ball_y, self.GAME_WIDTH + 12, self.score, self.attempt_num, self.GAME_WIDTH*2 - 135)
              
 
-        return state, reward, self.score, {}
+        return state, reward, self.score, done, {}

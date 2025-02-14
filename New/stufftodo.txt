@@ -1,0 +1,2 @@
+ - Make a dashboard for the reward system to change it mid game
+ - Add reward for time
