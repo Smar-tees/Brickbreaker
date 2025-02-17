@@ -7,7 +7,7 @@ from net import DQN
 
 
 class Agent:
-    def __init__(self, state_size, action_size, learning_rate=0.001, gamma=0.99, epsilon=1.0, epsilon_min=0.01, epsilon_decay=0.95):
+    def __init__(self, state_size, action_size, learning_rate=0.001, gamma=0.99, epsilon=1.0, epsilon_min=0.2, epsilon_decay=0.95):
         self.state_size = state_size
         self.action_size = action_size
         self.gamma = gamma  # Discount factor
@@ -73,7 +73,6 @@ class Agent:
     
     def decay_epsilon(self):
         if self.epsilon > self.epsilon_min:
-            print('epsilon decayed')
             self.epsilon *= self.epsilon_decay
 
 

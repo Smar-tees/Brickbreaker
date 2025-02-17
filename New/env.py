@@ -120,9 +120,9 @@ class BrickBreakerEnv(gym.Env):
         self.ball_x = next_ball_x
         self.ball_y = next_ball_y
 
-        current_time = pygame.time.get_ticks()
-        time_alive = (current_time - self.start_time) / 1000.0  # Convert to seconds
-        reward += self.time_reward * (time_alive / 10)
+        # current_time = pygame.time.get_ticks()
+        # time_alive = (current_time - self.start_time) / 1000.0  # Convert to seconds
+        # reward += self.time_reward * (time_alive / 10)
 
         if self.ball_y > self.GAME_HEIGHT:
             done = True

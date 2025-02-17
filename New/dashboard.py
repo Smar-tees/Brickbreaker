@@ -90,7 +90,7 @@ sliders = [
     Slider(150, 425, 200, 10, -100, 100, 25, "Brick Hit Reward"),
     Slider(150, 475, 200, 10, -100, 100, 15, "Paddle Hit Reward"),
     Slider(150, 525, 200, 10, -100, 100, -50, "Loss Penalty"),
-    Slider(150, 575, 200, 10, -100, 100, 1, "Time Alive Reward")
+    Slider(150, 575, 200, 10, -100, 100, 0, "Time Alive Reward")
 ]
 
 SCREEN_WIDTH = 1200

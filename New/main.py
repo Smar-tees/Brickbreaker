@@ -47,7 +47,7 @@ for episode in range(num_episodes):
         # Train the model
         agent.replay()
 
-        clock.tick(60)
+        clock.tick(120)
     
     agent.decay_epsilon()
 
