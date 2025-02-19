@@ -30,22 +30,28 @@ agent.model.eval()  # Set the model to evaluation mode
 
 
 num_episodes = 100
+FRAMES_PER_ACTION = 5
 
 for episode in range(num_episodes):
     state = env.reset()
     total_reward = 0
     done = False
+    num_frames = 0
 
     while not done:
-        action = agent.choose_action(state)
+        if num_frames % FRAMES_PER_ACTION == 0:
+            action = agent.choose_action(state)
+
         next_state, reward, done = dash(screen, env, action)
 
-        # agent.remember(state, action, reward, next_state, done)
+        if num_frames % FRAMES_PER_ACTION == 0:
+            agent.remember(state, action, reward, next_state, done)
+            agent.replay()
+        
+        
         state = next_state
         total_reward += reward
-
-        # Train the model
-        agent.replay()
+        num_frames += 1
 
         clock.tick(120)
     

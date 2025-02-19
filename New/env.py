@@ -35,8 +35,17 @@ class BrickBreakerEnv(gym.Env):
         self.loss_penalty = -50
         self.time_reward = 1
 
+        self.distance_penalty_factor = 1
+
 
         self.create_bricks()
+    
+    def calculate_distance_penalty(self):
+        # Calculate absolute distance between paddle and ball
+        distance = abs(self.paddle_x - self.ball_x)
+        # Convert distance to a penalty
+        penalty = distance * self.distance_penalty_factor
+        return -penalty
         
 
     def create_bricks(self):
@@ -126,7 +135,7 @@ class BrickBreakerEnv(gym.Env):
 
         if self.ball_y > self.GAME_HEIGHT:
             done = True
-            reward = self.loss_penalty
+            reward += self.calculate_distance_penalty()
         
         else:
             done = False

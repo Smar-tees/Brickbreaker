@@ -31,6 +31,7 @@ class Agent:
             return random.randrange(self.action_size)  # Random action
         state = torch.FloatTensor(state).unsqueeze(0)
         q_values = self.model(state)
+        print(torch.argmax(q_values).item())
         return torch.argmax(q_values).item()  # Choose action with highest Q-value
 
     def remember(self, state, action, reward, next_state, done):
