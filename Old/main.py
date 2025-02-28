@@ -25,7 +25,7 @@ action_size = 3  # Left, Right, Stay
 agent = Agent(state_size, action_size)
 
 # Load the trained model
-agent.model.load_state_dict(torch.load('New/agent.pth'))
+agent.model.load_state_dict(torch.load('Old/best_model.pth'))
 agent.model.eval()  # Set the model to evaluation mode
 
 
